@@ -1,0 +1,341 @@
+openapi: 3.0.3
+info:
+  title: API de Votação em Cooperativa
+  description: |-
+    API REST para gerenciar pautas e sessões de votação para associados de uma cooperativa.
+
+    Funcionalidades:
+    1. Cadastro de Pautas: permite a criação de novos assuntos a serem votados.
+    2. Abertura de Sessões: inicia um período de votação para uma pauta existente.
+    3. Registro de Votos: coleta os votos (Sim ou não) dos associados.
+    4. Contabilização de Resultados: apresenta o resultado final de uma sessão de votação.
+  version: 1.2.0
+
+servers:
+  - url: /api/v1
+    description: Endpoint
+
+paths:
+  /pautas:
+    post:
+      summary: Cadastra uma nova pauta
+      tags:
+        - Pauta
+      description: Cria um novo pauta para futura votação.
+      operationId: criarPauta
+      requestBody:
+        description: Dados da pauta a ser criada.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PautaRequest'
+      responses:
+        '201':
+          description: Pauta criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PautaResponse'
+        '400':
+          description: Requisição inválida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Obtém as pautas cadastradas
+      tags:
+        - Pauta
+      description: Obtém as pautas cadastradas no sistema.
+      operationId: obterPautas
+      responses:
+        '200':
+          description: Pautas obtidas com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PautaResponse'
+  
+  /pautas/{pautaUuid}/sessoes:
+    get:
+      summary: Obtém as sessões de uma pauta
+      tags:
+        - Pauta
+      description: Retorna uma lista com todas as sessões de votaçã associadas a uma pauta específica.
+      operationId: obterSessoesPorPauta
+      parameters:
+        - name: pautaUuid
+          in: path
+          required: true
+          description: UUID da pauta.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lista de sessões da pauta.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessaoResponse'
+        '404':
+          description: Pauta com o UUID informado não foi encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sessoes:
+    post:
+      summary: Abre uma sessão de votação
+      tags:
+        - Sessão de Votação
+      description: |-
+        Abre uma nova sessão de votação para uma pauta.
+        A duração da sessão pode ser especificada em minutos. Caso não seja informada, assume o valor padrão de 1 minuto.
+      operationId: abrirSessao
+      requestBody:
+        description: Dados para abertura da sessão.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessaoRequest'
+      responses:
+        '201':
+          description: Sessão de votação aberta com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessaoResponse'
+        '404':
+          description: Pauta com o UUID informado não foi encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Já existe uma sessão de votação aberta para esta pauta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sessoes/{sessaoUuid}/votos:
+    post:
+      summary: Registra um voto
+      tags:
+        - Voto
+      description: |-
+        Registra o voto de um associado (identificado pelo CPF) em uma sessão de votação específica
+        Cada associado pode votar apenas uma vez por sessão.
+      operationId: registrarVoto
+      parameters:
+        - name: sessaoUuid
+          in: path
+          required: true
+          description: UUID da sessão de votação.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Dados do voto, incluindo o CPF do associado e a opção de voto.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VotoRequest'
+      responses:
+        '201':
+          description: Voto registrado com sucesso.
+        '400':
+          description: Requisição inválida ou a sessão de votação não está aberta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sessão não encontrada, CPF inválido ou associado não habilitado para votar (UNABLE_TO_VOTE).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: O associado (CPF) já votou nesta sessão.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sessoes/{sessaoUuid}/resultado:
+    get:
+      summary: Obtém o resultado da votação
+      tags:
+        - Sessão de Votação
+      description: |-
+        Contabiliza e retorna o resultado final de uma sessão de votação, identificada por UUID.
+        O resultado só pode ser obtido após o fechamento da sessão.
+      operationId: obterResultado
+      parameters:
+        - name: sessaoUuid
+          in: path
+          required: true
+          description: UUID da sessão de votação.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Resultado da votação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoResponse'
+        '404':
+          description: Sessão de votação não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: A sessão de votação ainda está aberta. O resultado não pode ser apurado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    PautaRequest:
+      type: object
+      required:
+        - titulo
+      properties:
+        titulo:
+          type: string
+          example: "Aprovação de novo estatuto"
+        descricao:
+          type: string
+          example: "Discussão e votação da proposta de alteração do estatuto social da cooperativa."
+
+    PautaResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Identificador único da pauta.
+          example: "a3d5e0a0-6c3e-4f5b-8e1a-2b9c8d7e6f5a"
+        titulo:
+          type: string
+          example: "Aprovação de novo estatuto"
+        descricao:
+          type: string
+          example: "Discussão e votação da proposta de alteração do estatuto social da cooperativa."
+
+    SessaoRequest:
+      type: object
+      required:
+        - pautaUuid
+      properties:
+        pautaUuid:
+          type: string
+          format: uuid
+          description: UUID da pauta a ser votada.
+          example: "a3d5e0a0-6c3e-4f5b-8e1a-2b9c8d7e6f5a"
+        duracaoEmMinutos:
+          type: integer
+          description: Duração da sessão em minutos. Se não for fornecido, o padrão é 1.
+          example: 10
+          default: 1
+
+    SessaoResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Identificador único da sessão de votação.
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        pautaUuid:
+          type: string
+          format: uuid
+          example: "a3d5e0a0-6c3e-4f5b-8e1a-2b9c8d7e6f5a"
+        dataAbertura:
+          type: string
+          format: date-time
+          example: "2025-06-07T11:30:00Z"
+        dataFechamento:
+          type: string
+          format: date-time
+          example: "2025-06-07T11:31:00Z"
+
+    VotoRequest:
+      type: object
+      required:
+        - cpfAssociado
+        - votoSim
+      properties:
+        cpfAssociado:
+          type: string
+          description: CPF do associado votante. Deve conter apenas números.
+          example: "12345678901"
+        votoSim:
+          type: boolean
+          description: "Representa o voto."
+          example: true
+
+    ResultadoResponse:
+      type: object
+      properties:
+        sessaoId:
+          type: string
+          format: uuid
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        pauta:
+          $ref: '#/components/schemas/PautaResponse'
+        sessaoInfo:
+          type: object
+          properties:
+            dataAbertura:
+              type: string
+              format: date-time
+              example: "2025-06-07T11:30:00Z"
+            dataFechamento:
+              type: string
+              format: date-time
+              example: "2025-06-07T11:31:00Z"
+        resultado:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 150
+            votosSim:
+              type: integer
+              example: 100
+            votosNao:
+              type: integer
+              example: 50
+            aprovada:
+              type: boolean
+              example: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2025-06-07T11:31:00Z'
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: 'Pauta com o UUID informado não foi encontrada. =*('

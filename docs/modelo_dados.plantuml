@@ -1,0 +1,29 @@
+@startuml modelo
+
+class Pauta {
+  id: Long
+  uuid: String
+  titulo: String
+  descricao: String
+}
+
+class SessaoVotacao {
+  id: Long
+  uuid: String
+  dataAbertura: LocalDateTime
+  dataFechamento: LocalDateTime
+  pautaId: Long
+}
+
+class Voto {
+  id: Long
+  uuid: String
+  sessaoVotacaoId: Long
+  cpfAssociado: String
+  votoSim: Boolean
+}
+
+Pauta "1" -- "0.." SessaoVotacao
+SessaoVotacao "1" -- "0.." Voto
+
+@enduml
