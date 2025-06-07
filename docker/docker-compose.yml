@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  db:
+    build: ./postgresql
+    container_name: desafio_votacao-database
+    environment:
+      - POSTGRES_MAX_CONNECTIONS=200
+    ports:
+      - 5439:5432
