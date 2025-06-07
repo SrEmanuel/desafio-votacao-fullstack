@@ -21,15 +21,27 @@ paths:
       summary: Cadastra uma nova pauta
       tags:
         - Pauta
-      description: Cria um novo pauta para futura votação.
-      operationId: criarPauta
+      description: |-
+        Cria uma nova pauta para futura votação.
+        Esta operação aceita o envio dos dados da pauta como um objeto JSON e um arquivo em anexo na mesma chamada.
+      operationId: criarPautaComAnexo
       requestBody:
-        description: Dados da pauta a ser criada.
+        description: Dados da pauta e o arquivo opcional.
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PautaRequest'
+              type: object
+              properties:
+                pauta:
+                  $ref: '#/components/schemas/PautaRequest'
+                arquivo:
+                  type: string
+                  format: binary
+                  description: Arquivo opcional para anexar à pauta (PDF, Imagem, etc.).
+            encoding:
+              pauta:
+                contentType: application/json
       responses:
         '201':
           description: Pauta criada com sucesso.
@@ -58,7 +70,38 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PautaResponse'
-  
+  /pautas/{pautaUuid}:
+    delete:
+      summary: Remove uma pauta
+      tags:
+        - Pauta
+      description: |-
+        Remove uma pauta específica, identificado pelo seu UUID.
+        A operação só é permitida se a pauta não possuir nenhuma sessão de votação vinculada.
+      operationId: removerPauta
+      parameters:
+        - name: pautaUuid
+          in: path
+          required: true
+          description: UUID da pauta a ser removida.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Pauta removida com sucesso.
+        '404':
+          description: Pauta com o UUID informado não foi encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: A pauta não pode ser removida pois possui uma ou mais sessões de votação associadas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /pautas/{pautaUuid}/sessoes:
     get:
       summary: Obtém as sessões de uma pauta
@@ -171,6 +214,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /sessions/{sessionUuid}:
+    delete:
+      summary: Remove uma sessão de votação
+      tags:
+        - Sessão de Votação
+      description: |-
+        Remove uma sessão de votação específica, identificada pelo seu UUID.
+        A operação só é permitida se a sessão não possuir nenhum voto registrado.
+      operationId: removerSessao
+      parameters:
+        - name: sessionUuid
+          in: path
+          required: true
+          description: UUID da sessão a ser removida.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Sessão removida com sucesso.
+        '404':
+          description: Sessão com o UUID informado não foi encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: A sessão não pode ser removida pois possui um ou mais votos registrados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /sessoes/{sessaoUuid}/resultado:
     get:
@@ -237,6 +312,11 @@ components:
         descricao:
           type: string
           example: "Discussão e votação da proposta de alteração do estatuto social da cooperativa."
+        arquivoUrl:
+          type: string
+          format: uri
+          description: URL para acessar o anexo, se um arquivo foi enviado.
+          example: "https://localhost:9000/arquivo-bucket/pautas/anexo-estatuto.pdf"
 
     SessaoRequest:
       type: object

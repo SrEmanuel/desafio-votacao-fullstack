@@ -7,6 +7,12 @@ class Pauta {
   descricao: String
 }
 
+class Arquivo{
+  id: Long
+  uuid: String
+  url: String
+}
+
 class SessaoVotacao {
   id: Long
   uuid: String
@@ -23,6 +29,8 @@ class Voto {
   votoSim: Boolean
 }
 
+
+Pauta "1" -- "1" Arquivo
 Pauta "1" -- "0.." SessaoVotacao
 SessaoVotacao "1" -- "0.." Voto
 
