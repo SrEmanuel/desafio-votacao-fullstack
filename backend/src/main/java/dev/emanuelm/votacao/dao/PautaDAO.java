@@ -1,6 +1,7 @@
 package dev.emanuelm.votacao.dao;
 
 import dev.emanuelm.votacao.domain.Pauta;
+import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.PautaRequestDTO;
 import dev.emanuelm.votacao.dto.PautaResponseDTO;
 import dev.emanuelm.votacao.exceptions.GenericServiceError;
@@ -20,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class PautaDAO {
 
   private final PautaRepository pautaRepository;
-  private final SessaoVotacaoRepository sessaoVotacaoRepository;
+  private final SessaoVotacaoDAO sessaoVotacaoRepository;
 
-  public PautaDAO(PautaRepository pautaRepository, SessaoVotacaoRepository sessaoVotacaoRepository) {
+  public PautaDAO(PautaRepository pautaRepository, SessaoVotacaoDAO sessaoVotacaoRepository) {
     this.pautaRepository = pautaRepository;
     this.sessaoVotacaoRepository = sessaoVotacaoRepository;
   }
@@ -67,6 +68,10 @@ public class PautaDAO {
 
 
   public Pauta obterPauta(String uuid){
+    if(uuid == null){
+      throw new GenericServiceError("O UUID da pauta não pode ser nulo!");
+    }
+
     Optional<Pauta> pauta = pautaRepository.findByUuid(uuid);
     if(pauta.isEmpty()){
       throw new GenericServiceError("Não existe nenhuma pauta com esse UUID.");
@@ -90,5 +95,10 @@ public class PautaDAO {
 
   public List<Pauta> obterPautas() {
     return pautaRepository.findAll();
+  }
+
+  public List<SessaoVotacao> obterSessoes(String pautaUuid) {
+    Pauta pauta = obterPauta(pautaUuid);
+    return sessaoVotacaoRepository.obterSessoesPauta(pauta);
   }
 }

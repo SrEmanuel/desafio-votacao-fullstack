@@ -2,8 +2,10 @@ package dev.emanuelm.votacao.controller;
 
 import dev.emanuelm.votacao.dao.PautaDAO;
 import dev.emanuelm.votacao.domain.Pauta;
+import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.PautaRequestDTO;
 import dev.emanuelm.votacao.dto.PautaResponseDTO;
+import dev.emanuelm.votacao.dto.SessaoResponseDTO;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,11 @@ public class PautaController {
   }
 
 
+  @GetMapping("/{pautaUuid}/sessoes")
+  public ResponseEntity<List<SessaoResponseDTO>> obterSessoesPauta(@PathVariable String pautaUuid){
+    List<SessaoVotacao> sessoes = pautaDAO.obterSessoes(pautaUuid);
+    return ResponseEntity.ok().body(sessoes.stream().map(SessaoResponseDTO::new).toList());
+  }
 
 
 

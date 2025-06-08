@@ -1,6 +1,5 @@
 package dev.emanuelm.votacao.pautas;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,6 +9,7 @@ import dev.emanuelm.votacao.domain.Pauta;
 import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.PautaRequestDTO;
 import dev.emanuelm.votacao.dto.PautaResponseDTO;
+import dev.emanuelm.votacao.dto.SessaoResponseDTO;
 import dev.emanuelm.votacao.repository.PautaRepository;
 import dev.emanuelm.votacao.repository.SessaoVotacaoRepository;
 import java.time.LocalDateTime;
@@ -148,6 +148,41 @@ public class PautaControllerTest {
         .expectStatus().isBadRequest();
 
     assertTrue(pautaRepository.existsByUuid(pauta.getUuid()), "A pauta NÃO deveria ter sido deletada do banco de dados!");
+  }
+
+
+  /**
+   * Testa o endpoint /api/v1/pauta
+   */
+  @Test
+  void deveConseguirListarSessoeDePautasCadastradasNoSistema(){
+    final String nomePauta = "Pauta de Teste: " + UUID.randomUUID();
+    final String descricaoPauta = "Pauta de testes para avaliar a questão da empresa.";
+
+    Pauta pauta = new Pauta();
+    pauta.setTitulo(nomePauta);
+    pauta.setDescricao(descricaoPauta);
+    pauta = pautaRepository.save(pauta);
+
+    SessaoVotacao sessaoVotacao = new SessaoVotacao();
+    sessaoVotacao.setDataAbertura(LocalDateTime.now());
+    sessaoVotacao.setDataFechamento(LocalDateTime.now());
+    sessaoVotacao.setPauta(pauta);
+
+    sessaoVotacaoRepository.save(sessaoVotacao);
+
+    List<SessaoResponseDTO> sessoes = webTestClient.get().uri(String.format("%s/%s/sessoes", PAUTA_URI, pauta.getUuid()))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(SessaoResponseDTO.class)
+        .returnResult().getResponseBody();
+
+    assertNotNull(sessoes);
+    assertFalse(sessoes.isEmpty());
+    final String pautaUuid = pauta.getUuid();
+    assertTrue(sessoes.stream().allMatch(sessao -> sessao.pautaUuid().equals(pautaUuid)), "Todos os retornos devem ser de sessoẽs da"
+        + "pauta informada");
+    assertEquals(1,  sessoes.size(), "Deve haver somente uma sessão.");
   }
 
 
