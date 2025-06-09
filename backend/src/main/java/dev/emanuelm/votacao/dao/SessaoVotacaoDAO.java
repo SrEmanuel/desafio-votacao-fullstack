@@ -3,11 +3,11 @@ package dev.emanuelm.votacao.dao;
 import dev.emanuelm.votacao.domain.Pauta;
 import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.SessaoRequestDTO;
+import dev.emanuelm.votacao.dto.VotoRequestDTO;
 import dev.emanuelm.votacao.exceptions.GenericServiceError;
 import dev.emanuelm.votacao.exceptions.SessaoPersistenceError;
 import dev.emanuelm.votacao.repository.PautaRepository;
 import dev.emanuelm.votacao.repository.SessaoVotacaoRepository;
-import dev.emanuelm.votacao.repository.VotoRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +19,10 @@ public class SessaoVotacaoDAO {
 
   private final SessaoVotacaoRepository sessaoVotacaoRepository;
   private final PautaRepository pautaRepository;
-  private final VotoRepository votoRepository;
 
-  public SessaoVotacaoDAO(SessaoVotacaoRepository sessaoVotacaoRepository, PautaRepository pautaRepository,
-      VotoRepository votoRepository) {
+  public SessaoVotacaoDAO(SessaoVotacaoRepository sessaoVotacaoRepository, PautaRepository pautaRepository) {
     this.sessaoVotacaoRepository = sessaoVotacaoRepository;
     this.pautaRepository = pautaRepository;
-    this.votoRepository = votoRepository;
   }
 
   public List<SessaoVotacao> obterSessoesPauta(Pauta pauta){
@@ -71,12 +68,11 @@ public class SessaoVotacaoDAO {
   }
 
   public void deletarSessao(String uuid) {
-    SessaoVotacao sessaoVotacao =  obterSessao(uuid);
+    SessaoVotacao sessaoVotacao = obterSessao(uuid);
     try{
       sessaoVotacaoRepository.delete(sessaoVotacao);
     }catch (DataIntegrityViolationException e){
       throw new SessaoPersistenceError("Não é possível deletar essa sessão pois existem votos registrados nela!");
     }
   }
-
 }

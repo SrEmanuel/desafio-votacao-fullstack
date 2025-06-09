@@ -21,27 +21,15 @@ paths:
       summary: Cadastra uma nova pauta
       tags:
         - Pauta
-      description: |-
-        Cria uma nova pauta para futura votação.
-        Esta operação aceita o envio dos dados da pauta como um objeto JSON e um arquivo em anexo na mesma chamada.
-      operationId: criarPautaComAnexo
+      description: Cria uma nova pauta para futura votação.
+      operationId: criarPauta
       requestBody:
-        description: Dados da pauta e o arquivo opcional.
+        description: Dados da pauta.
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              type: object
-              properties:
-                pauta:
-                  $ref: '#/components/schemas/PautaRequest'
-                arquivo:
-                  type: string
-                  format: binary
-                  description: Arquivo opcional para anexar à pauta (PDF, Imagem, etc.).
-            encoding:
-              pauta:
-                contentType: application/json
+              $ref: '#/components/schemas/PautaRequest'
       responses:
         '201':
           description: Pauta criada com sucesso.
@@ -312,11 +300,6 @@ components:
         descricao:
           type: string
           example: "Discussão e votação da proposta de alteração do estatuto social da cooperativa."
-        arquivoUrl:
-          type: string
-          format: uri
-          description: URL para acessar o anexo, se um arquivo foi enviado.
-          example: "https://localhost:9000/arquivo-bucket/pautas/anexo-estatuto.pdf"
 
     SessaoRequest:
       type: object
@@ -373,23 +356,21 @@ components:
     ResultadoResponse:
       type: object
       properties:
-        sessaoId:
+        sessaoUuid:
           type: string
           format: uuid
           example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
-        pauta:
-          $ref: '#/components/schemas/PautaResponse'
-        sessaoInfo:
-          type: object
-          properties:
-            dataAbertura:
+        dataAbertura:
               type: string
               format: date-time
               example: "2025-06-07T11:30:00Z"
-            dataFechamento:
-              type: string
-              format: date-time
-              example: "2025-06-07T11:31:00Z"
+        dataFechamento:
+          type: string
+          format: date-time
+          example: "2025-06-07T11:31:00Z"
+        pauta:
+          $ref: '#/components/schemas/PautaResponse'
+
         resultado:
           type: object
           properties:

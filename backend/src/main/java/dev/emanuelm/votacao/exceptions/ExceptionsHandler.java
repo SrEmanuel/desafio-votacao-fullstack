@@ -28,4 +28,16 @@ public class ExceptionsHandler {
   }
 
 
+  @ExceptionHandler({VotoPersistenceError.class})
+  public ResponseEntity<ErroDTO> handleException(VotoPersistenceError error, WebRequest request) {
+    ErroDTO erro = new ErroDTO("VOTO_ERROR", error.getMessage());
+    return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({ResultadoError.class})
+  public ResponseEntity<ErroDTO> handleException(ResultadoError error, WebRequest request) {
+    ErroDTO erro = new ErroDTO("RESULTADO_ERROR", error.getMessage());
+    return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
+  }
+
 }
