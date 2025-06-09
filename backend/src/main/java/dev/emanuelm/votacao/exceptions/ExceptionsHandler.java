@@ -21,5 +21,11 @@ public class ExceptionsHandler {
     return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler({SessaoPersistenceError.class})
+  public ResponseEntity<ErroDTO> handleException(SessaoPersistenceError error, WebRequest request) {
+    ErroDTO erro = new ErroDTO("SESSAO_VOTACAO_ERROR", error.getMessage());
+    return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
+  }
+
 
 }

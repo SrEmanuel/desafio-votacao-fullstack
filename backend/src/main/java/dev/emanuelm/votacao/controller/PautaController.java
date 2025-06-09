@@ -1,6 +1,7 @@
 package dev.emanuelm.votacao.controller;
 
 import dev.emanuelm.votacao.dao.PautaDAO;
+import dev.emanuelm.votacao.dao.SessaoVotacaoDAO;
 import dev.emanuelm.votacao.domain.Pauta;
 import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.PautaRequestDTO;
@@ -8,7 +9,6 @@ import dev.emanuelm.votacao.dto.PautaResponseDTO;
 import dev.emanuelm.votacao.dto.SessaoResponseDTO;
 import java.net.URI;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +24,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class PautaController {
 
   private final PautaDAO pautaDAO;
+  private final SessaoVotacaoDAO sessaoVotacaoDAO;
 
-  public PautaController(PautaDAO pautaDAO) {
+
+  public PautaController(PautaDAO pautaDAO, SessaoVotacaoDAO sessaoVotacaoDAO) {
     this.pautaDAO = pautaDAO;
+    this.sessaoVotacaoDAO = sessaoVotacaoDAO;
   }
 
   @PostMapping
@@ -59,7 +62,8 @@ public class PautaController {
 
   @GetMapping("/{pautaUuid}/sessoes")
   public ResponseEntity<List<SessaoResponseDTO>> obterSessoesPauta(@PathVariable String pautaUuid){
-    List<SessaoVotacao> sessoes = pautaDAO.obterSessoes(pautaUuid);
+    Pauta pauta = pautaDAO.obterPauta(pautaUuid);
+    List<SessaoVotacao> sessoes = sessaoVotacaoDAO.obterSessoesPauta(pauta);
     return ResponseEntity.ok().body(sessoes.stream().map(SessaoResponseDTO::new).toList());
   }
 
