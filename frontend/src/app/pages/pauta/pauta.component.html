@@ -1,0 +1,57 @@
+<div class="mainContainer">
+  <div class="headerContainer">
+    <h2>Listagem de Pautas</h2>
+    <p-button label="Criar nova pauta" (click)="showCreateDialog()" />
+  </div>
+
+  <div class="tableContainer">
+    <p-table [value]="pautas" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Título</th>
+          <th>Descrição</th>
+          <th>Ação</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-pauta>
+        <tr>
+          <td>{{ pauta.titulo }}</td>
+          <td>{{ pauta.descricao }}</td>
+          <td>
+            <div class="buttonColumn">
+              <p-button label="Acessar" />
+              <p-button label="Deletar" (onClick)="deletePauta(pauta)" styleClass="p-button-danger" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog 
+  header="Criar Nova Pauta" 
+  [(visible)]="displayCreateDialog" 
+  [modal]="true" 
+  [style]="{width: '35rem' }" 
+  [draggable]="false" 
+  [resizable]="false"
+  (onHide)="hideCreateDialog()">
+
+  <form [formGroup]="pautaForm" class="p-fluid pautaForm">
+    <div class="field">
+      <label for="titulo">Título</label>
+      <input id="titulo" type="text" pInputText formControlName="titulo">
+    </div>
+
+    <div class="field">
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" pInputTextarea formControlName="descricao" [rows]="5"></textarea>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (click)="hideCreateDialog()" />
+    <p-button label="Salvar" icon="pi pi-check" (click)="salvarPauta()" />
+  </ng-template>
+</p-dialog>
