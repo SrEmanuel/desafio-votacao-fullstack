@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  db:
+    build: ./docker/postgresql
+    container_name: desafio_votacao-database
+    environment:
+      - POSTGRES_MAX_CONNECTIONS=200
+    ports:
+      - 5439:5432
+    networks:
+      - desafio-net
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    environment:
+      - TZ=America/Sao_Paulo
+      - JDBC_CONNECTION=jdbc:postgresql://db:5432/desafio-votacao
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - desafio-net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - 4200:80
+    networks:
+      - desafio-net
+
+networks:
+  desafio-net:
+    driver: bridge
