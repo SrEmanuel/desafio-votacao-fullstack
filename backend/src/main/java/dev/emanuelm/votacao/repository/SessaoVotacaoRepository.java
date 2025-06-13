@@ -10,7 +10,7 @@ public interface SessaoVotacaoRepository extends JpaRepository<SessaoVotacao, Lo
 
   int countByPauta(Pauta pauta);
 
-  List<SessaoVotacao> findAllByPauta(Pauta pauta);
+  List<SessaoVotacao> findAllByPautaOrderByDataAberturaAsc(Pauta pauta);
 
   Optional<SessaoVotacao> findByUuid(String uuid);
 }

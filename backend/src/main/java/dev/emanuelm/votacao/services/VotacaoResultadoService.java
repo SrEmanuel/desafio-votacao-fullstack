@@ -6,6 +6,7 @@ import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.domain.Voto;
 import dev.emanuelm.votacao.dto.PautaResponseDTO;
 import dev.emanuelm.votacao.dto.ResultadoDTO;
+import dev.emanuelm.votacao.dto.SessaoResponseDTO;
 import dev.emanuelm.votacao.dto.SessaoResultadoDTO;
 import dev.emanuelm.votacao.exceptions.GenericServiceError;
 import dev.emanuelm.votacao.exceptions.ResultadoError;

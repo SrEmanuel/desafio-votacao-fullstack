@@ -1,0 +1,81 @@
+<div class="mainContainer">
+  <div class="headerContainer">
+    <div class="headerInnerContainer">
+      <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded p-button-text" (click)="goBack()"></button>
+      <h2>Sessão de Votação</h2>
+    </div>
+    <div *ngIf="!isSessaoFechada && tempoRestante" class="timer-chip">
+      <i class="pi pi-clock"></i>
+      <span>{{ tempoRestante }}</span>
+    </div>
+  </div>
+
+  <div class="infoContainer" *ngIf="sessao">
+    <div class="infoFlexContainer">
+      <div class="infoItem">
+        <strong>Abertura:</strong> <span>{{ formatDate(sessao.dataAbertura) }}</span>
+      </div>
+      <div class="infoItem">
+        <strong>Fechamento:</strong> <span>{{ formatDate(sessao.dataFechamento) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="contentContainer">
+    <div *ngIf="!isSessaoFechada; else resultadoView">
+      <p-card>
+        <ng-template pTemplate="title">
+          Registre seu Voto
+        </ng-template>
+        <form [formGroup]="votoForm" class="votoForm">
+          <div class="field">
+            <label for="cpf">CPF do Associado</label>
+            <input id="cpf" pInputText formControlName="cpf" placeholder="Digite os 11 dígitos do CPF" />
+            <a style="font-size: 15px;" *ngIf="votoForm.controls['cpf'].touched && votoForm.controls['cpf'].errors?.['required']" class="p-error">CPF é obrigatório.</a>
+            <a  style="font-size: 15px;" *ngIf="votoForm.controls['cpf'].touched && votoForm.controls['cpf'].errors?.['pattern']" class="p-error">CPF inválido. Digite 11 números.</a>
+          </div>
+
+          <div class="buttonContainer">
+            <button pButton pRipple type="button" label="APROVADO" icon="pi pi-check" class="p-button-success" (click)="registrarVoto('SIM')"></button>
+            <button pButton pRipple type="button" label="REPROVADO" icon="pi pi-times" class="p-button-danger" (click)="registrarVoto('NAO')"></button>
+          </div>
+        </form>
+      </p-card>
+    </div>
+
+    <ng-template #resultadoView>
+      <div *ngIf="isSessaoFechada && resultado">
+        <p-card>
+            <ng-template pTemplate="title">
+                Resultado da Votação
+            </ng-template>
+            <div class="resultadoContainer">
+                <div class="resultadoItem">
+                    <span class="label">Votos a Favor (Sim):</span>
+                    <span class="valor">{{ resultado.resultado.votosSim }}</span>
+                </div>
+                 <div class="resultadoItem">
+                    <span class="label">Votos Contra (Não):</span>
+                    <span class="valor">{{ resultado.resultado.votosNao }}</span>
+                </div>
+                <div class="resultadoItem">
+                    <span class="label">Total de Votos:</span>
+                    <span class="valor">{{ resultado.resultado.total }}</span>
+                </div>
+                <div class="resultadoFinal">
+                    <span class="label">Resultado:</span>
+                    <p-tag 
+                        [severity]="resultado.resultado.aprovado ? 'success' : 'danger'"
+                        [value]="resultado.resultado.aprovado ? 'Aprovada' : 'Reprovada'">
+                    </p-tag>
+                </div>
+            </div>
+        </p-card>
+      </div>
+      <div *ngIf="isSessaoFechada && !resultado" class="loading-results">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Carregando resultados...</span>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -3,7 +3,6 @@ package dev.emanuelm.votacao.dao;
 import dev.emanuelm.votacao.domain.Pauta;
 import dev.emanuelm.votacao.domain.SessaoVotacao;
 import dev.emanuelm.votacao.dto.SessaoRequestDTO;
-import dev.emanuelm.votacao.dto.VotoRequestDTO;
 import dev.emanuelm.votacao.exceptions.GenericServiceError;
 import dev.emanuelm.votacao.exceptions.SessaoPersistenceError;
 import dev.emanuelm.votacao.repository.PautaRepository;
@@ -30,7 +29,7 @@ public class SessaoVotacaoDAO {
       throw new GenericServiceError("A pauta informada não pode ser nula.");
     }
 
-    return sessaoVotacaoRepository.findAllByPauta(pauta);
+    return sessaoVotacaoRepository.findAllByPautaOrderByDataAberturaAsc(pauta);
   }
 
   public SessaoVotacao criarSessao(SessaoRequestDTO request) {

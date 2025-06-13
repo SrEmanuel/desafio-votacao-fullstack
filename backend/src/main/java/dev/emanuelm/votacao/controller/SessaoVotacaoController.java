@@ -69,6 +69,11 @@ public class SessaoVotacaoController {
     return ResponseEntity.ok().body(votacaoResultadoService.obterResultado(sessaoUuid));
   }
 
+  @GetMapping("/{sessaoUuid}")
+  public ResponseEntity<SessaoResponseDTO> obterSessao(@PathVariable String sessaoUuid){
+    return ResponseEntity.ok().body(new SessaoResponseDTO(sessaoVotacaoDAO.obterSessao(sessaoUuid)));
+  }
+
 
 
 

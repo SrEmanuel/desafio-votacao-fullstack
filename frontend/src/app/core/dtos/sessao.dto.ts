@@ -21,6 +21,6 @@ export interface ResultadoResponse {
     total: number;
     votosSim: number;
     votosNao: number;
-    aprovada: boolean;
+    aprovado: boolean;
   };
 }

@@ -1,6 +1,43 @@
 .container{
-  height: 18rem;
   width: 13rem;
-  background-color: rgb(166, 166, 177);
+  border-width: 2.5px;
+  border-color: #10b981;
+  border-style: solid;
+  background-color: rgba(255, 251, 246, 0.849);
   border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding-bottom: 1rem;
+  overflow: hidden;
+}
+
+.dataContainer{
+  padding-top: 10px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.buttonContainer{
+  padding-top: 10px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: row;
+}
+
+
+.title { 
+  background-color: #10b981;
+  justify-content: center;  
+  display: flex;
+  padding: 1rem;
+  text-align: center;
+}
+
+.title a {
+  color: aliceblue;
+  font-size: 1rem;
 }

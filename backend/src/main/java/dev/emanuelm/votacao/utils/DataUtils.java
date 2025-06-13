@@ -21,7 +21,7 @@ public abstract class DataUtils {
     if (localDateTime == null) {
       return null;
     }
-    return localDateTime.atOffset(ZoneOffset.UTC).format(FORMATTER);
+    return localDateTime.atOffset(ZoneOffset.of("-03:00")).format(FORMATTER);
   }
 
   /**

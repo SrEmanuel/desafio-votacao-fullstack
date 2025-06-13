@@ -1,1 +1,35 @@
-<p>sessao works!</p>
+<div class="mainContainer">
+  <div class="headerContainer">
+    <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded p-button-text" (click)="goBack()"></button>
+    <h2>Listagem de sessões de votação</h2>
+  </div>
+
+  <div class="tableContainer">
+    <card-component *ngFor="let sessao of sessoes"
+      [sessao]="sessao"
+    ></card-component>
+    <add-card-component (addClick)="showDialog()"></add-card-component>
+  </div>
+</div>
+
+<p-dialog 
+  header="Criar Sessão de Votação" 
+  [(visible)]="displayDialog" 
+  [modal]="true" 
+  [style]="{width: '35rem' }" 
+  [draggable]="false" 
+  [resizable]="false"
+  (onHide)="hideDialog()">
+
+  <form [formGroup]="sessaoForm" class="p-fluid sessaoForm">
+    <div class="field">
+      <label for="duracaoEmMinutos">Tempo de abertura da sessão em minutos</label>
+      <input id="duracaoEmMinutos" type="number" pInputText formControlName="duracaoEmMinutos" min="1" step="1">
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (click)="hideDialog()" />
+    <p-button label="Salvar" icon="pi pi-check" (click)="saveSessao()" />
+  </ng-template>
+</p-dialog>

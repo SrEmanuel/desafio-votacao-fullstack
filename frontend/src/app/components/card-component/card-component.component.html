@@ -1,6 +1,24 @@
 <div class="container">
+  <div class="title">
+    <a>Sessão de votação</a>
+  </div>
+  <div class="dataContainer">
+    <a>Data de abertura</a>
+    <a>{{this.formattedDataAbertura}}</a>
+  </div>
+  <div class="dataContainer">
+    <a>Data de fechamento</a>
+    <a>{{this.formattedDataFechamento}}</a>
+  </div>
 
+  <div class="buttonContainer">
+    <ng-container *ngIf="!isClosed">
+      <p-button label="Cancelar" icon="pi pi-times" (onClick)="delete()" styleClass="p-button-text p-button-sm" />
+      <p-button label="Acessar" (onClick)="goToDetails()" />
+    </ng-container>
 
-
-
+    <ng-container *ngIf="isClosed">
+      <p-button label="Buscar resultado" (onClick)="goToDetails()" />
+    </ng-container>
+  </div>
 </div>

@@ -19,7 +19,7 @@
           <td>{{ pauta.descricao }}</td>
           <td>
             <div class="buttonColumn">
-              <p-button label="Acessar" />
+              <p-button label="Acessar" (onClick)="abrirPauta(pauta)" />
               <p-button label="Deletar" (onClick)="deletePauta(pauta)" styleClass="p-button-danger" />
             </div>
           </td>
@@ -46,7 +46,11 @@
 
     <div class="field">
       <label for="descricao">Descrição</label>
-      <textarea id="descricao" pInputTextarea formControlName="descricao" [rows]="5"></textarea>
+      <textarea 
+        id="descricao"  
+        formControlName="descricao" 
+        [rows]="5" 
+      ></textarea>
     </div>
   </form>
 

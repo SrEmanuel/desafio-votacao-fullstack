@@ -1,0 +1,25 @@
+.container {
+  width: 56px;
+  height: 56px;
+  margin: 3rem;
+  border-radius: 50%;
+  border: none;
+  background-color: #10b981;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+.container:hover {
+  background-color: #119166;
+}
+
+.container:active {
+  transform: scale(0.95);
+}

@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { PautaService } from '../../core/services/pauta.service';
 import { PautaResponse } from '../../core/dtos/pauta.dto';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pautas',
@@ -33,7 +34,7 @@ export class PautaComponent implements OnInit {
 
   protected pautas: PautaResponse[] = [];
   
-  constructor(private fb: FormBuilder, private pautaService: PautaService, private messageService: MessageService) {
+  constructor(private fb: FormBuilder, private pautaService: PautaService, private messageService: MessageService, private router: Router) {
     this.pautaForm = this.fb.group({
       titulo: ['', Validators.required],
       descricao: ['', Validators.required]
@@ -84,6 +85,11 @@ export class PautaComponent implements OnInit {
     });
 
   }
+
+  abrirPauta(pauta: PautaResponse) {
+    this.router.navigate(['/pauta', pauta.uuid, 'sessoes']);
+  }
+
 
   salvarPauta() {
     if (this.pautaForm.valid) {
